@@ -1,7 +1,9 @@
-mod ui_page;
-
 use log::info;
 use ui_page::UiPage;
+use ui_request_test::UiRequestTest;
+
+mod ui_page;
+pub mod ui_request_test;
 
 const HEADING: &str = concat!("Test App ver: ", env!("CARGO_PKG_VERSION"));
 
@@ -10,6 +12,7 @@ const HEADING: &str = concat!("Test App ver: ", env!("CARGO_PKG_VERSION"));
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TestApp {
     ui_page: Option<UiPage>,
+    ui_request_test: UiRequestTest,
 }
 
 impl TestApp {
@@ -48,7 +51,7 @@ impl eframe::App for TestApp {
     }
 
     /// Called each time the UI needs repainting, which may be many times per second.
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
@@ -83,6 +86,8 @@ impl eframe::App for TestApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
             ui.heading(HEADING);
+
+            self.ui_request_test.show(ui, frame);
 
             ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                 powered_by_egui_and_eframe(ui);

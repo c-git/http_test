@@ -44,15 +44,15 @@ impl Resource {
     }
 }
 
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct HttpApp {
+#[derive(serde::Deserialize, serde::Serialize)]
+pub struct UiRequestTest {
     url: String,
 
-    #[cfg_attr(feature = "serde", serde(skip))]
+    #[serde(skip)]
     promise: Option<Promise<ehttp::Result<Resource>>>,
 }
 
-impl Default for HttpApp {
+impl Default for UiRequestTest {
     fn default() -> Self {
         Self {
             url: "https://raw.githubusercontent.com/emilk/egui/master/README.md".to_owned(),
@@ -61,60 +61,51 @@ impl Default for HttpApp {
     }
 }
 
-impl eframe::App for HttpApp {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::bottom("http_bottom").show(ctx, |ui| {
-            let layout = egui::Layout::top_down(egui::Align::Center).with_main_justify(true);
-            ui.allocate_ui_with_layout(ui.available_size(), layout, |ui| {
-                ui.add(egui_demo_lib::egui_github_link_file!())
-            })
+impl UiRequestTest {
+    pub fn show(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        let prev_url = self.url.clone();
+        let trigger_fetch = ui_url(ui, frame, &mut self.url);
+
+        ui.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing.x = 0.0;
+            ui.label("HTTP requests made using ");
+            ui.hyperlink_to("ehttp", "https://www.github.com/emilk/ehttp");
+            ui.label(".");
         });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            let prev_url = self.url.clone();
-            let trigger_fetch = ui_url(ui, frame, &mut self.url);
-
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing.x = 0.0;
-                ui.label("HTTP requests made using ");
-                ui.hyperlink_to("ehttp", "https://www.github.com/emilk/ehttp");
-                ui.label(".");
+        if trigger_fetch {
+            let ctx = ui.ctx().clone();
+            let (sender, promise) = Promise::new();
+            let request = ehttp::Request::get(&self.url);
+            ehttp::fetch(request, move |response| {
+                ctx.forget_image(&prev_url);
+                ctx.request_repaint(); // wake up UI thread
+                let resource = response.map(|response| Resource::from_response(&ctx, response));
+                sender.send(resource);
             });
+            self.promise = Some(promise);
+        }
 
-            if trigger_fetch {
-                let ctx = ctx.clone();
-                let (sender, promise) = Promise::new();
-                let request = ehttp::Request::get(&self.url);
-                ehttp::fetch(request, move |response| {
-                    ctx.forget_image(&prev_url);
-                    ctx.request_repaint(); // wake up UI thread
-                    let resource = response.map(|response| Resource::from_response(&ctx, response));
-                    sender.send(resource);
-                });
-                self.promise = Some(promise);
-            }
+        ui.separator();
 
-            ui.separator();
-
-            if let Some(promise) = &self.promise {
-                if let Some(result) = promise.ready() {
-                    match result {
-                        Ok(resource) => {
-                            ui_resource(ui, resource);
-                        }
-                        Err(error) => {
-                            // This should only happen if the fetch API isn't available or something similar.
-                            ui.colored_label(
-                                ui.visuals().error_fg_color,
-                                if error.is_empty() { "Error" } else { error },
-                            );
-                        }
+        if let Some(promise) = &self.promise {
+            if let Some(result) = promise.ready() {
+                match result {
+                    Ok(resource) => {
+                        ui_resource(ui, resource);
                     }
-                } else {
-                    ui.spinner();
+                    Err(error) => {
+                        // This should only happen if the fetch API isn't available or something similar.
+                        ui.colored_label(
+                            ui.visuals().error_fg_color,
+                            if error.is_empty() { "Error" } else { error },
+                        );
+                    }
                 }
+            } else {
+                ui.spinner();
             }
-        });
+        }
     }
 }
 
@@ -127,6 +118,8 @@ fn ui_url(ui: &mut egui::Ui, frame: &eframe::Frame, url: &mut String) -> bool {
             .add(egui::TextEdit::singleline(url).desired_width(f32::INFINITY))
             .lost_focus();
     });
+
+    // TODO 2: Add a submit button
 
     if frame.is_web() {
         ui.label("HINT: paste the url of this page into the field above!");
