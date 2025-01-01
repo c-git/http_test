@@ -1,5 +1,9 @@
 # Reqwest with egui testing
 
+Simple app to test using reqwest in egui apps and for debugging.
+
+Deployed to github pages at: https://dev.chester.wykies.com/reqwest_w_egui_testing/
+
 ### Testing locally
 
 `cargo run --release`
