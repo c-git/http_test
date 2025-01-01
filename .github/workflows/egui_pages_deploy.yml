@@ -19,6 +19,7 @@ jobs:
     # https://docs.github.com/en/actions/sharing-automations/reusing-workflows#calling-a-reusable-workflow
     uses: ./.github/workflows/general.yml
   build-github-pages:
+    needs: run_tests # Requires that the other job succeeds before this one will start
     runs-on: ubuntu-latest
     steps:
       - uses: wykies/checkout@main
