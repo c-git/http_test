@@ -4,13 +4,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on:
-  push: 
-    branches:
-      - main
+on:  
   pull_request: 
     branches:
       - main
+  workflow_call:
+    
 env:
   CARGO_TERM_COLOR: always
 
