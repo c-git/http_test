@@ -40,3 +40,21 @@ We use [Trunk](https://trunkrs.dev/) to build for web target.
 > To enable Github Pages, you need to go to Repository -> Settings -> Pages -> Source -> set to `gh-pages` branch and `/` (root).
 >
 > If `gh-pages` is not available in `Source`, just create and push a branch called `gh-pages` and it should be available.
+
+## License
+
+All code in this repository is dual-licensed under either:
+
+- Apache License, Version 2.0
+- MIT license
+
+at your option.
+This means you can select the license you prefer!
+This dual-licensing approach is the de-facto standard in the Rust ecosystem and there are very good reasons to include both as noted in
+this [issue](https://github.com/bevyengine/bevy/issues/2373) on [Bevy](https://bevyengine.org)'s repo.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall
+be dual licensed as above, without any additional terms or conditions.
