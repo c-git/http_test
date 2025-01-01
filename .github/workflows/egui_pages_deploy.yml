@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: ./trunk build --release --public-url $public_url
         env:
-          public_url: "https://dev.chester.wykies.com/reqwest_w_egui_testing/"
+          public_url: "https://dev.chester.wykies.com/{{ github.event.repository.name }}"
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
