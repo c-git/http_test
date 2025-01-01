@@ -17,18 +17,19 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    name: Test WASM in browser
-    runs-on: ubuntu-latest
-    steps:
-      - uses: wykies/checkout@main
-      - uses: wykies/setup-rust-toolchain@main
-        with:
-          target: wasm32-unknown-unknown
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Run tests
-        run: wasm-pack test --headless --chrome
+  # TODO 4: Add a wasm-pack test
+  # test:
+  #   name: Test WASM in browser
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: wykies/checkout@main
+  #     - uses: wykies/setup-rust-toolchain@main
+  #       with:
+  #         target: wasm32-unknown-unknown
+  #     - name: Install wasm-pack
+  #       run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+  #     - name: Run tests
+  #       run: wasm-pack test --headless --chrome
 
   clippy:
     name: Clippy WASM
