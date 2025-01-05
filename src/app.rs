@@ -5,7 +5,7 @@ use ui_request_test::UiRequestTest;
 mod ui_page;
 pub mod ui_request_test;
 
-const HEADING: &str = concat!("Test App ver: ", env!("CARGO_PKG_VERSION"));
+const HEADING: &str = concat!("Test App ", env!("CARGO_PKG_VERSION"));
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize, Default)]
