@@ -15,7 +15,7 @@ async fn main() -> eframe::Result {
         .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
             EnvFilter::new(if cfg!(debug_assertions) {
-                "info"
+                "zbus=warn,info"
             } else {
                 "warn"
             })
