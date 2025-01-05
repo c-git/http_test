@@ -40,6 +40,8 @@ jobs:
         with:
           target: wasm32-unknown-unknown
           components: clippy
+      - name: Change to client folder
+        run: cd crates/client
       - name: Linting
         run: cargo clippy --target="wasm32-unknown-unknown" -- -D warnings
     
@@ -51,6 +53,8 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           target: wasm32-unknown-unknown
+      - name: Change to client folder
+        run: cd crates/client
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build

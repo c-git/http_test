@@ -1,54 +1,26 @@
-[package]
-name = "http-client"
-version = "0.1.0"
-authors = ["One <one.bgz1@gmail.com>"]
-edition = "2021"
-include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
+[workspace]
+resolver = "2"
+members = [
+  "crates/client",
+]
 
-[package.metadata.docs.rs]
-all-features = true
-targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
-
-[dependencies]
+[workspace.dependencies]
 anyhow = "1.0.95"
 chrono = "0.4.39"
-eframe = { version = "0.30", default-features = false, features = [ #
-  "accesskit", # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
-  "default_fonts", # Embed the default egui fonts.
-  "glow", # Use the glow rendering backend. Alternative: "wgpu".
-  "persistence", # Enable restoring app state when restarting the app.
-  "wayland", # To support Linux (and CI)
-  "x11", # Support x11 systems
-] }
+eframe = { version = "0.30", default-features = false }
 egui = "0.30"
 egui_extras = "0.30.0"
-reqwest-cross = { version = "0.5.0-dev", git = "https://github.com/c-git/reqwest-cross", branch = "develop", features = ["egui", "cookies"] }
-serde = { version = "1", features = ["derive"] }
-tracing = "0.1.41"
-
-# native:
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1.42.0", default-features = false, features = ["macros", "rt-multi-thread"] }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-
-# web:
-[target.'cfg(target_arch = "wasm32")'.dependencies]
 log = "0.4.22"
+reqwest-cross = { git = "https://github.com/c-git/reqwest-cross", branch = "develop" }
+serde = "1"
+tokio = { version = "1.42.0", default-features = false }
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
 wasm-bindgen-futures = "0.4"
-web-sys = "0.3.70" # to access the DOM (to hide the loading text)
+web-sys = "0.3.70"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
 
-# Optimize all dependencies even in debug builds:
-[profile.dev.package."*"]
-opt-level = 2
-
+# https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
-# If you want to use the bleeding edge version of egui and eframe:
-# egui = { git = "https://github.com/emilk/egui", branch = "master" }
-# eframe = { git = "https://github.com/emilk/egui", branch = "master" }
-
-# If you fork https://github.com/emilk/egui you can test with:
-# egui = { path = "../egui/crates/egui" }
-# eframe = { path = "../egui/crates/eframe" }
