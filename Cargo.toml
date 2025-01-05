@@ -24,12 +24,11 @@ egui = "0.30"
 egui_extras = "0.30.0"
 reqwest-cross = { version = "0.5.0-dev", path = "../reqwest-cross/", features = ["cookies", "egui"] }
 serde = { version = "1", features = ["derive"] }
-tokio = { version = "1.42.0", default-features = false, features = ["macros", "rt-multi-thread"] }
 tracing = "0.1.41"
 
 # native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-tokio = { version = "1.42.0", default-features = false, features = ["macros"] }
+tokio = { version = "1.42.0", default-features = false, features = ["macros", "rt-multi-thread"] }
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
 # web:
