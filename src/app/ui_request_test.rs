@@ -84,7 +84,7 @@ impl UiRequestTest {
         });
 
         if frame.is_web() {
-            ui.label("HINT: paste the url of this page into the field above!");
+            ui.label("HINT: try pasting the url of this page into the field above!");
         }
     }
 
@@ -108,6 +108,13 @@ fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
     //     "size:         {:.1} kB",
     //     response.bytes.len() as f32 / 1000.0
     // ));
+    if ui
+        .button("📋 Copy Response")
+        .on_hover_text("Click to copy the response body")
+        .clicked()
+    {
+        ui.ctx().copy_text(resp.text.clone());
+    }
 
     ui.separator();
 
@@ -130,13 +137,8 @@ fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
 
             // ui.separator();
 
-            let tooltip = "Click to copy the response body";
-            if ui.button("📋").on_hover_text(tooltip).clicked() {
-                ui.ctx().copy_text(resp.text.clone());
-            }
-            ui.separator();
-
             ui.add(egui::Label::new(&resp.text).selectable(true));
+            // TODO 3: Enable syntax highlighting (Let user choose extension)
         });
 }
 
