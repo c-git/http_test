@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["One <one.bgz1@gmail.com>"]
 edition = "2021"
 include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
+publish = false
 
 [package.metadata.docs.rs]
 all-features = true
