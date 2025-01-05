@@ -81,7 +81,6 @@ impl UiRequestTest {
             if let DataState::Present(resp) = resp_data {
                 ui_resource(ui, resp, self.cookie_display_mode);
             } else {
-                info!(?self.url,"new request made");
                 let ctx = ui.ctx().clone();
                 let outcome = resp_data.egui_get(ui, None, || {
                     let req = self.client.get(&self.url);
