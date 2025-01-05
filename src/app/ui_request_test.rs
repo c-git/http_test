@@ -87,10 +87,12 @@ impl UiRequestTest {
             if let DataState::Present(resp) = resp_data {
                 ui_resource(ui, resp, self.cookie_display_mode);
             } else {
+                info!(?self.url,"new request made");
                 let ctx = ui.ctx().clone();
                 resp_data.get(|| {
                     let req = self.client.get(&self.url);
                     let response_handler = |resp: reqwest::Result<reqwest::Response>| async {
+                        info!("response received");
                         let resp = resp.context("failed to get response, request failed")?;
                         let url = resp.url().to_string();
                         let status = resp.status();
