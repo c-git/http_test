@@ -88,11 +88,11 @@ impl UiRequestTest {
                 ui_resource(ui, resp, self.cookie_display_mode);
             } else {
                 let ctx = ui.ctx().clone();
-                let url = self.url.clone();
                 resp_data.get(|| {
                     let req = self.client.get(&self.url);
                     let response_handler = |resp: reqwest::Result<reqwest::Response>| async {
                         let resp = resp.context("failed to get response, request failed")?;
+                        let url = resp.url().to_string();
                         let status = resp.status();
                         let size_kb = resp.content_length().map(|x| x as f32 / 1000.0);
                         let headers = resp
