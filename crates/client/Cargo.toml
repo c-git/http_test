@@ -17,7 +17,7 @@ eframe = { workspace = true, features = ["accesskit", "default_fonts", "glow", "
 egui.workspace = true
 egui_extras.workspace = true
 reqwest-cross = { workspace = true, features = ["egui", "cookies"] }
-serde = { workspace = true, features = ["derive"] }
+serde.workspace = true
 tracing.workspace = true
 
 # native:
