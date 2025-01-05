@@ -56,7 +56,9 @@ jobs:
           target: wasm32-unknown-unknown
       - name: Change to client folder
         run: cd crates/client
-      - name: Download and install Trunk binary
-        run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+      - name: Install Trunk
+        uses: taiki-e/install-action@main
+        with:
+          tool: trunk
       - name: Build
-        run: ./trunk build
+        run: trunk build
