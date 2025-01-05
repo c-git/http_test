@@ -17,7 +17,7 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "reqwest-w-egui-testing",
         native_options,
         Box::new(|cc| Ok(Box::new(reqwest_w_egui_testing::TestApp::new(cc)))),
     )

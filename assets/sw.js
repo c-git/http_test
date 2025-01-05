@@ -1,4 +1,4 @@
-var cacheName = 'egui-template-pwa';
+var cacheName = 'reqwest-w-egui-testing-pwa';
 var filesToCache = [
   './',
   './index.html',
