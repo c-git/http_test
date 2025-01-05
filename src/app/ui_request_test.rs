@@ -22,7 +22,7 @@ pub struct UiRequestTest {
     client: reqwest::Client,
 
     #[serde(skip)]
-    /// When Option::None we don't want to load anything otherwise try to load current url
+    /// When Option::None we don't want to load anything otherwise try to load or display the current url
     resp_data: Option<DataState<ResponseData>>,
 }
 
@@ -83,7 +83,7 @@ impl UiRequestTest {
             } else {
                 info!(?self.url,"new request made");
                 let ctx = ui.ctx().clone();
-                resp_data.get(|| {
+                let outcome = resp_data.egui_get(ui, None, || {
                     let req = self.client.get(&self.url);
                     let response_handler = |resp: reqwest::Result<reqwest::Response>| async {
                         info!("response received");
@@ -121,6 +121,10 @@ impl UiRequestTest {
                     let rx = fetch_plus(req, response_handler, ui_notify);
                     Awaiting(rx)
                 });
+                debug_assert!(
+                    outcome.is_able_to_make_progress(),
+                    "Should only call function if there is progress to be made"
+                );
             }
         }
     }
