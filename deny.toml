@@ -1,0 +1,12 @@
+# This section is considered when running `cargo deny check advisories`
+# More documentation for the advisories section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
+[advisories]
+ignore = [
+  # "RUSTSEC-0000-0000",
+
+  # TODO 3: Check if fixes are available for advisories
+
+  # Haven't been able to find the tracking issue for this but we don't try to access any user supplied urls
+  "RUSTSEC-2024-0421",
+]
