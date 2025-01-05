@@ -3,6 +3,7 @@
 
 # trunk output folder
 dist
+crates/server/app/
 
 # Rust compile target directories:
 target

@@ -1,2 +1,3 @@
 [build]
+dist = "../server/app"
 filehash = false
