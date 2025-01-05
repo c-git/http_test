@@ -33,9 +33,9 @@ async fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "reqwest-w-egui-testing",
+        "http-client",
         native_options,
-        Box::new(|cc| Ok(Box::new(reqwest_w_egui_testing::TestApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(http_client::TestApp::new(cc)))),
     )
 }
 
@@ -65,7 +65,7 @@ fn main() {
             .start(
                 canvas,
                 web_options,
-                Box::new(|cc| Ok(Box::new(reqwest_w_egui_testing::TestApp::new(cc)))),
+                Box::new(|cc| Ok(Box::new(http_client::TestApp::new(cc)))),
             )
             .await;
 

@@ -1,6 +1,6 @@
 {
-  "name": "reqwest-w-egui-testing PWA",
-  "short_name": "reqwest-w-egui-testing-pwa",
+  "name": "http-client PWA",
+  "short_name": "http-client-pwa",
   "icons": [
     {
       "src": "./assets/icon-256.png",

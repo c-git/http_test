@@ -1,8 +1,8 @@
-# Reqwest with egui testing
+# HTTP Test
 
-Simple app to test using reqwest in egui apps and for debugging.
+Developed to test HTTP Requests and Cookie Handling
 
-Deployed to github pages at: https://dev.chester.wykies.com/reqwest_w_egui_testing/
+Deployed to github pages at: https://dev.chester.wykies.com/http_test/
 
 ### Testing locally
 

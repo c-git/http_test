@@ -1,9 +1,9 @@
-var cacheName = "reqwest-w-egui-testing-pwa";
+var cacheName = "http-client-pwa";
 var filesToCache = [
   "./",
   "./index.html",
-  "./reqwest-w-egui-testing.js",
-  "./reqwest-w-egui-testing_bg.wasm",
+  "./http-client.js",
+  "./http-client_bg.wasm",
 ];
 
 /* Start the service worker and cache all of the app's content */

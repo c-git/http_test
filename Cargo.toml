@@ -1,5 +1,5 @@
 [package]
-name = "reqwest-w-egui-testing"
+name = "http-client"
 version = "0.1.0"
 authors = ["One <one.bgz1@gmail.com>"]
 edition = "2021"
