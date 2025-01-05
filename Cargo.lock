@@ -2951,6 +2951,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui_extras",
+ "log",
  "reqwest-cross",
  "serde",
  "tokio",
