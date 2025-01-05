@@ -1,11 +1,18 @@
 //! Original structure taken from https://www.egui.rs/#http
 
 use anyhow::Context as _;
-use reqwest_cross::{fetch_plus, reqwest, Awaiting, DataState};
+use reqwest_cross::{
+    fetch_plus,
+    reqwest::{self, StatusCode},
+    Awaiting, DataState,
+};
 
 struct ResponseData {
     url: String,
     text: String,
+    status: StatusCode,
+    size_kb: Option<f32>,
+    headers: Vec<(String, String)>,
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -55,12 +62,30 @@ impl UiRequestTest {
                 resp_data.get(|| {
                     let req = self.client.get(&self.url);
                     let response_handler = |resp: reqwest::Result<reqwest::Response>| async {
+                        let resp = resp.context("failed to get response, request failed")?;
+                        let status = resp.status();
+                        let size_kb = resp.content_length().map(|x| x as f32 / 1000.0);
+                        let headers = resp
+                            .headers()
+                            .iter()
+                            .map(|(name, value)| {
+                                (
+                                    name.to_string(),
+                                    value.to_str().unwrap_or_default().to_string(),
+                                )
+                            })
+                            .collect();
                         let text = resp
-                            .context("failed to get response, request failed")?
                             .text()
                             .await
                             .context("failed to get text from response")?;
-                        Ok(ResponseData { url, text })
+                        Ok(ResponseData {
+                            url,
+                            text,
+                            status,
+                            size_kb,
+                            headers,
+                        })
                     };
                     let ui_notify = move || {
                         ctx.request_repaint();
@@ -96,18 +121,15 @@ impl UiRequestTest {
 
 fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
     ui.monospace(format!("url:          {}", resp.url));
-    // ui.monospace(format!(
-    //     "status:       {} ({})",
-    //     response.status, response.status_text
-    // ));
-    // ui.monospace(format!(
-    //     "content-type: {}",
-    //     response.content_type().unwrap_or_default()
-    // ));
-    // ui.monospace(format!(
-    //     "size:         {:.1} kB",
-    //     response.bytes.len() as f32 / 1000.0
-    // ));
+    ui.monospace(format!("status:       {}", resp.status,));
+    ui.monospace(format!(
+        "size:         {}",
+        if let Some(size) = resp.size_kb.as_ref() {
+            format!("{size:.1} kB")
+        } else {
+            "[Not Available]".to_string()
+        }
+    ));
     if ui
         .button("📋 Copy Response")
         .on_hover_text("Click to copy the response body")
@@ -121,21 +143,21 @@ fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
     egui::ScrollArea::vertical()
         .auto_shrink(false)
         .show(ui, |ui| {
-            // egui::CollapsingHeader::new("Response headers")
-            //     .default_open(false)
-            //     .show(ui, |ui| {
-            //         egui::Grid::new("response_headers")
-            //             .spacing(egui::vec2(ui.spacing().item_spacing.x * 2.0, 0.0))
-            //             .show(ui, |ui| {
-            //                 for (k, v) in &response.headers {
-            //                     ui.label(k);
-            //                     ui.label(v);
-            //                     ui.end_row();
-            //                 }
-            //             })
-            //     });
+            egui::CollapsingHeader::new("Response headers")
+                .default_open(false)
+                .show(ui, |ui| {
+                    egui::Grid::new("response_headers")
+                        .spacing(egui::vec2(ui.spacing().item_spacing.x * 2.0, 0.0))
+                        .show(ui, |ui| {
+                            for (k, v) in &resp.headers {
+                                ui.label(k);
+                                ui.label(v);
+                                ui.end_row();
+                            }
+                        })
+                });
 
-            // ui.separator();
+            ui.separator();
 
             ui.add(egui::Label::new(&resp.text).selectable(true));
             // TODO 3: Enable syntax highlighting (Let user choose extension)
