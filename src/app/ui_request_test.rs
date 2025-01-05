@@ -81,7 +81,6 @@ impl UiRequestTest {
             {
                 self.trigger_fetch();
             }
-            // TODO 2: Add a submit button (maybe use a right to left layout and put the button first)
         });
 
         if frame.is_web() {
