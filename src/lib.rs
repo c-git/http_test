@@ -2,8 +2,8 @@
 
 #[cfg(not(target_arch = "wasm32"))]
 mod suppress_used_in_bin {
-    use env_logger as _;
     use tokio as _;
+    use tracing_subscriber as _;
 }
 
 mod app;

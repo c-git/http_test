@@ -1,4 +1,4 @@
-use log::info;
+use tracing::info;
 use ui_page::UiPage;
 use ui_request_test::UiRequestTest;
 
