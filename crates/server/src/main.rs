@@ -14,5 +14,5 @@ async fn main() -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clon
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")))
         .init();
 
-    Ok(http_test::setup_closure().into())
+    Ok(http_test_server::setup_closure().into())
 }

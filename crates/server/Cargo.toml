@@ -1,5 +1,5 @@
 [package]
-name = "http-test"
+name = "http-test-server"
 version = "0.1.0"
 edition = "2021"
 publish = false
