@@ -1,23 +1,17 @@
 //! Original structure taken from https://www.egui.rs/#http
 
 mod cookies;
+mod response_data;
 
 use anyhow::Context as _;
-use cookies::{Cookie, CookieDisplayMode};
+use cookies::CookieDisplayMode;
 use reqwest_cross::{
     fetch_plus,
-    reqwest::{self, StatusCode},
+    reqwest::{self},
     Awaiting, DataState,
 };
-
-struct ResponseData {
-    url: String,
-    text: String,
-    status: StatusCode,
-    size_kb: Option<f32>,
-    headers: Vec<(String, String)>,
-    cookies: Vec<Cookie>,
-}
+use response_data::ResponseData;
+use tracing::info;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct UiRequestTest {
