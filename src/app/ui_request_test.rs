@@ -1,6 +1,9 @@
 //! Original structure taken from https://www.egui.rs/#http
 
+mod cookies;
+
 use anyhow::Context as _;
+use cookies::{Cookie, CookieDisplayMode};
 use reqwest_cross::{
     fetch_plus,
     reqwest::{self, StatusCode},
@@ -13,11 +16,13 @@ struct ResponseData {
     status: StatusCode,
     size_kb: Option<f32>,
     headers: Vec<(String, String)>,
+    cookies: Vec<Cookie>,
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct UiRequestTest {
     url: String,
+    cookie_display_mode: CookieDisplayMode,
 
     #[serde(skip)]
     client: reqwest::Client,
@@ -36,6 +41,7 @@ impl Default for UiRequestTest {
                 .cookie_store(true)
                 .build()
                 .expect("failed to create reqwest client"),
+            cookie_display_mode: Default::default(),
         }
     }
 }
@@ -51,11 +57,35 @@ impl UiRequestTest {
             ui.label(".");
         });
 
+        ui.horizontal(|ui| {
+            ui.label("Cookie Display Mode:");
+            ui.radio_value(
+                &mut self.cookie_display_mode,
+                CookieDisplayMode::NameOnly,
+                CookieDisplayMode::NameOnly.to_string(),
+            );
+            ui.radio_value(
+                &mut self.cookie_display_mode,
+                CookieDisplayMode::NameValue,
+                CookieDisplayMode::NameValue.to_string(),
+            );
+            ui.radio_value(
+                &mut self.cookie_display_mode,
+                CookieDisplayMode::Pretty,
+                CookieDisplayMode::Pretty.to_string(),
+            );
+            ui.radio_value(
+                &mut self.cookie_display_mode,
+                CookieDisplayMode::SingleLine,
+                CookieDisplayMode::SingleLine.to_string(),
+            );
+        });
+
         ui.separator();
 
         if let Some(resp_data) = self.resp_data.as_mut() {
             if let DataState::Present(resp) = resp_data {
-                ui_resource(ui, resp);
+                ui_resource(ui, resp, self.cookie_display_mode);
             } else {
                 let ctx = ui.ctx().clone();
                 let url = self.url.clone();
@@ -75,6 +105,7 @@ impl UiRequestTest {
                                 )
                             })
                             .collect();
+                        let cookies = resp.cookies().map(|x| x.into()).collect();
                         let text = resp
                             .text()
                             .await
@@ -85,6 +116,7 @@ impl UiRequestTest {
                             status,
                             size_kb,
                             headers,
+                            cookies,
                         })
                     };
                     let ui_notify = move || {
@@ -119,7 +151,7 @@ impl UiRequestTest {
     }
 }
 
-fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
+fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData, cookie_display_mode: CookieDisplayMode) {
     ui.monospace(format!("url:          {}", resp.url));
     ui.monospace(format!("status:       {}", resp.status,));
     ui.monospace(format!(
@@ -156,11 +188,23 @@ fn ui_resource(ui: &mut egui::Ui, resp: &ResponseData) {
                             }
                         })
                 });
+            ui.separator();
 
+            egui::CollapsingHeader::new("Cookie Jar")
+                .default_open(false)
+                .show(ui, |ui| {
+                    egui::Grid::new("cookies").show(ui, |ui| {
+                        for cookie in &resp.cookies {
+                            ui.label(cookie.display(cookie_display_mode));
+                            ui.end_row();
+                        }
+                    })
+                });
             ui.separator();
 
             ui.add(egui::Label::new(&resp.text).selectable(true));
             // TODO 3: Enable syntax highlighting (Let user choose extension)
+            use egui_extras as _; // Remove line after implementing syntax highlighting
         });
 }
 
