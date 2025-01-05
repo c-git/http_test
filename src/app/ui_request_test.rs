@@ -29,7 +29,7 @@ pub struct UiRequestTest {
 impl Default for UiRequestTest {
     fn default() -> Self {
         Self {
-            url: "https://github.com/c-git/reqwest_w_egui_testing/blob/main/README.md".to_owned(),
+            url: "https://dev.chester.wykies.com/".to_owned(),
             resp_data: Default::default(),
             client: reqwest::Client::builder()
                 .cookie_store(true)
