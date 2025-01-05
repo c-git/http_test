@@ -22,7 +22,7 @@ eframe = { version = "0.30", default-features = false, features = [ #
 ] }
 egui = "0.30"
 egui_extras = "0.30.0"
-reqwest-cross = { version = "0.5.0-dev", git = "https://github.com/c-git/reqwest-cross", branch = "develop" }
+reqwest-cross = { version = "0.5.0-dev", git = "https://github.com/c-git/reqwest-cross", branch = "develop", features = ["egui", "cookies"] }
 serde = { version = "1", features = ["derive"] }
 tracing = "0.1.41"
 
