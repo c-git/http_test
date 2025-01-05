@@ -80,6 +80,8 @@ impl UiRequestTest {
         if let Some(resp_data) = self.resp_data.as_mut() {
             if let DataState::Present(resp) = resp_data {
                 ui_resource(ui, resp, self.cookie_display_mode);
+            } else if let DataState::Failed(e) = resp_data {
+                ui.colored_label(ui.visuals().error_fg_color, format!("{e:?}"));
             } else {
                 let ctx = ui.ctx().clone();
                 let outcome = resp_data.egui_get(ui, None, || {
