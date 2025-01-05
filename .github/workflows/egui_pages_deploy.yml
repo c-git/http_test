@@ -29,20 +29,18 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           target: wasm32-unknown-unknown
-      - name: Change to client folder
-        run: cd crates/client
       - name: Install Trunk
         uses: taiki-e/install-action@main
         with:
           tool: trunk
       - name: Build
-        run: trunk build --release --public-url $public_url
+        run: cd crates/client && trunk build --release --public-url $public_url
         env:
           public_url: "https://dev.chester.wykies.com/${{ github.event.repository.name }}"
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: ../server/app
+          folder: crates/server/app
           # this option will not maintain any history of your previous pages deployment
           # set to false if you want all page build to be committed to your gh-pages branch history
           single-commit: true

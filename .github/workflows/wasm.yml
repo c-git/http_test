@@ -25,12 +25,10 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           target: wasm32-unknown-unknown
-      - name: Change to client folder
-        run: cd crates/client
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Run tests
-        run: wasm-pack test --headless --chrome
+        run: cd crates/client && wasm-pack test --headless --chrome
 
   clippy:
     name: Clippy WASM
@@ -41,10 +39,8 @@ jobs:
         with:
           target: wasm32-unknown-unknown
           components: clippy
-      - name: Change to client folder
-        run: cd crates/client
       - name: Linting
-        run: cargo clippy --target="wasm32-unknown-unknown" -- -D warnings
+        run: cd crates/client && cargo clippy --target="wasm32-unknown-unknown" -- -D warnings
     
   trunk:
     name: trunk
@@ -54,11 +50,9 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           target: wasm32-unknown-unknown
-      - name: Change to client folder
-        run: cd crates/client
       - name: Install Trunk
         uses: taiki-e/install-action@main
         with:
           tool: trunk
       - name: Build
-        run: trunk build
+        run: cd crates/client && trunk build
