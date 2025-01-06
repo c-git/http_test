@@ -5,6 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
+actix-cors = "0.7.0"
 actix-files.workspace = true
 actix-web.workspace = true
 anyhow.workspace = true

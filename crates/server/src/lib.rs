@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{
     web::{self, ServiceConfig},
@@ -8,7 +9,6 @@ use tracing_actix_web::TracingLogger;
 
 /// This function is called once per worker
 fn modify_service_config(cfg: &mut ServiceConfig) {
-    // TODO 2: Disable CORS
     cfg.service(Files::new("/", "dist").index_file("index.html"));
     cfg.default_service(web::route().to(not_found));
 }
@@ -27,6 +27,7 @@ async fn run_server(addr: std::net::SocketAddr) -> std::io::Result<()> {
     let server = HttpServer::new(|| {
         App::new()
             .wrap(TracingLogger::default())
+            .wrap(Cors::permissive()) // TODO 4: Test CORS disabled
             .configure(setup_closure())
     })
     .bind(addr)?
