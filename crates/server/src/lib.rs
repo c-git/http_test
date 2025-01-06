@@ -26,8 +26,8 @@ impl shuttle_runtime::Service for CustomShuttleService {
 async fn run_server(addr: std::net::SocketAddr) -> std::io::Result<()> {
     let server = HttpServer::new(|| {
         App::new()
+            .wrap(Cors::permissive())
             .wrap(TracingLogger::default())
-            .wrap(Cors::permissive()) // TODO 4: Test CORS disabled
             .configure(setup_closure())
     })
     .bind(addr)?
