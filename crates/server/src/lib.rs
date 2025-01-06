@@ -1,16 +1,31 @@
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{
-    web::{self, ServiceConfig},
-    App, HttpRequest, HttpResponse, HttpServer,
+    web::{self, scope, ServiceConfig},
+    App, HttpRequest, HttpResponse, HttpServer, ResponseError,
 };
+use routes::{cookie_expire, cookie_set, cookie_show};
+use thiserror::Error;
 use tracing::error;
 use tracing_actix_web::TracingLogger;
 
+mod routes;
+
+#[derive(Error, Debug)]
+#[error(transparent)]
+pub struct HandlerError(#[from] anyhow::Error);
+pub type Result<T, E = HandlerError> = core::result::Result<T, E>;
+
 /// This function is called once per worker
 fn modify_service_config(cfg: &mut ServiceConfig) {
-    cfg.service(Files::new("/", "dist").index_file("index.html"));
-    cfg.default_service(web::route().to(not_found));
+    cfg.service(
+        scope("/cookies")
+            .route("/", web::get().to(cookie_show))
+            .route("/delete/{name}", web::get().to(cookie_expire))
+            .route("/set/{name}/{value}", web::get().to(cookie_set)),
+    )
+    .service(Files::new("/", "dist").index_file("index.html"))
+    .default_service(web::route().to(not_found));
 }
 
 pub struct CustomShuttleService {}
@@ -55,4 +70,10 @@ pub fn setup_closure() -> impl FnOnce(&mut ServiceConfig) + Send + Clone + 'stat
 #[tracing::instrument(name = "DEFAULT NOT FOUND HANDLER", level = "error")]
 pub async fn not_found(req: HttpRequest) -> HttpResponse {
     HttpResponse::NotFound().body("404 - Not found\n")
+}
+
+impl ResponseError for HandlerError {
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        actix_web::http::StatusCode::IM_A_TEAPOT
+    }
 }

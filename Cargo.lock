@@ -2192,6 +2192,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shuttle-runtime",
+ "thiserror 2.0.9",
  "tokio",
  "tracing",
  "tracing-actix-web",
