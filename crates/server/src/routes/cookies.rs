@@ -2,11 +2,17 @@
 use actix_web::{
     cookie::Cookie,
     http::header::LOCATION,
-    web::{Json, Path},
+    web::{Json, Path, Query},
     HttpRequest, HttpResponse,
 };
 use anyhow::Context;
+use serde::Deserialize;
 use tracing::instrument;
+
+#[derive(Deserialize)]
+pub struct QueryData {
+    stay: Option<String>,
+}
 
 #[instrument]
 pub async fn cookie_show(req: HttpRequest) -> crate::Result<Json<Vec<(String, String)>>> {
@@ -19,22 +25,40 @@ pub async fn cookie_show(req: HttpRequest) -> crate::Result<Json<Vec<(String, St
 }
 
 #[instrument]
-pub async fn cookie_set(path: Path<(String, String)>) -> HttpResponse {
+pub async fn cookie_set(
+    path: Path<(String, String)>,
+    Query(QueryData { stay }): Query<QueryData>,
+) -> HttpResponse {
     let (name, value) = path.into_inner();
-    let cookie = Cookie::build(name, value).path("/").finish();
-    HttpResponse::SeeOther()
-        .insert_header((LOCATION, "/cookies/"))
-        .cookie(cookie)
-        .finish()
+    let cookie = Cookie::build(&name, &value).path("/").finish();
+    if stay.is_none() {
+        HttpResponse::SeeOther()
+            .insert_header((LOCATION, "/cookies/"))
+            .cookie(cookie)
+            .finish()
+    } else {
+        HttpResponse::Ok()
+            .cookie(cookie)
+            .body(format!("set cookie: {name} = {value}"))
+    }
 }
 
 #[instrument]
-pub async fn cookie_expire(path: Path<String>) -> HttpResponse {
+pub async fn cookie_expire(
+    path: Path<String>,
+    Query(QueryData { stay }): Query<QueryData>,
+) -> HttpResponse {
     let name = path.into_inner();
-    let mut cookie = Cookie::build(name, "").path("/").finish();
+    let mut cookie = Cookie::build(&name, "").path("/").finish();
     cookie.make_removal();
-    HttpResponse::SeeOther()
-        .insert_header((LOCATION, "/cookies/"))
-        .cookie(cookie)
-        .finish()
+    if stay.is_none() {
+        HttpResponse::SeeOther()
+            .insert_header((LOCATION, "/cookies/"))
+            .cookie(cookie)
+            .finish()
+    } else {
+        HttpResponse::Ok()
+            .cookie(cookie)
+            .body(format!("removed cookie: {name}"))
+    }
 }
