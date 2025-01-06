@@ -5,11 +5,7 @@ mod response_data;
 
 use anyhow::Context as _;
 use cookies::CookieDisplayMode;
-use reqwest_cross::{
-    fetch_plus,
-    reqwest::{self, header::COOKIE},
-    Awaiting, DataState,
-};
+use reqwest_cross::{fetch_plus, reqwest, Awaiting, DataState};
 use response_data::ResponseData;
 use tracing::info;
 
