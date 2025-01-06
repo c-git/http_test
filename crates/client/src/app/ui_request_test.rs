@@ -7,7 +7,7 @@ use anyhow::Context as _;
 use cookies::CookieDisplayMode;
 use reqwest_cross::{
     fetch_plus,
-    reqwest::{self},
+    reqwest::{self, header::COOKIE},
     Awaiting, DataState,
 };
 use response_data::ResponseData;
@@ -86,6 +86,7 @@ impl UiRequestTest {
                 let ctx = ui.ctx().clone();
                 let outcome = resp_data.egui_get(ui, None, || {
                     let req = self.client.get(&self.url);
+                    // let req = req.header(COOKIE, "custom=value"); // TODO 1: Add a way to inject cookies
                     let response_handler = |resp: reqwest::Result<reqwest::Response>| async {
                         info!("response received");
                         let resp = resp.context("failed to get response, request failed")?;
