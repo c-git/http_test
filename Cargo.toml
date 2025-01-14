@@ -1,9 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
-  "crates/client",
-  "crates/server",
-]
+members = ["crates/client", "crates/server"]
 
 [workspace.dependencies]
 actix-cors = "0.7.0"
@@ -18,19 +15,21 @@ futures-util = "0.3.31"
 log = "0.4.22"
 reqwest-cross = { git = "https://github.com/c-git/reqwest-cross", branch = "develop" }
 serde = { version = "1", features = ["derive"] }
-serde_json = "1.0.134"
-shuttle-runtime = { version = "0.49.0", default-features = false }
-thiserror = "2.0.9"
-tokio = { version = "1.42.0", default-features = false, features = ["macros", "rt-multi-thread"] }
+serde_json = "1.0.135"
+shuttle-runtime = { version = "0.51.0", default-features = false }
+thiserror = "2.0.11"
+tokio = { version = "1.43.0", default-features = false, features = [
+  "macros",
+  "rt-multi-thread",
+] }
 tracing = "0.1.41"
 tracing-actix-web = "0.7.15"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-wasm-bindgen-futures = "0.4"
-web-sys = "0.3.70"
+wasm-bindgen-futures = "0.4.50"
+web-sys = "0.3.77"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
 
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
-shuttle-runtime = { git = "https://github.com/shuttle-hq/shuttle" }
