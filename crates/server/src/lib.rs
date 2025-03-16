@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{
@@ -6,7 +8,7 @@ use actix_web::{
 };
 use routes::{cookie_expire, cookie_set, cookie_show};
 use thiserror::Error;
-use tracing::error;
+use tracing::{error, instrument};
 use tracing_actix_web::TracingLogger;
 
 mod routes;
@@ -18,14 +20,16 @@ pub type Result<T, E = HandlerError> = core::result::Result<T, E>;
 
 /// This function is called once per worker
 fn modify_service_config(cfg: &mut ServiceConfig) {
-    cfg.service(
-        scope("/cookies")
-            .route("/", web::get().to(cookie_show))
-            .route("/delete/{name}", web::get().to(cookie_expire))
-            .route("/set/{name}/{value}", web::get().to(cookie_set)),
-    )
-    .service(Files::new("/", "dist").index_file("index.html"))
-    .default_service(web::route().to(not_found));
+    cfg.service(scope("/echo").default_service(web::route().to(echo_handler)))
+        .service(scope("/echo_raw").default_service(web::route().to(echo_raw_handler)))
+        .service(
+            scope("/cookies")
+                .route("/", web::get().to(cookie_show))
+                .route("/delete/{name}", web::get().to(cookie_expire))
+                .route("/set/{name}/{value}", web::get().to(cookie_set)),
+        )
+        .service(Files::new("/", "dist").index_file("index.html"))
+        .default_service(web::route().to(not_found));
 }
 
 pub struct CustomShuttleService {}
@@ -76,4 +80,44 @@ impl ResponseError for HandlerError {
     fn status_code(&self) -> actix_web::http::StatusCode {
         actix_web::http::StatusCode::IM_A_TEAPOT
     }
+}
+
+#[instrument]
+pub async fn echo_raw_handler(req: HttpRequest, bytes: web::Bytes) -> HttpResponse {
+    HttpResponse::Ok().body(format!(
+        "\
+ECHO RAW RESPONSE
+
+-- req --
+{req:#?}
+--------------------------------------------------------
+
+-- bytes --
+{bytes:#?}"
+    ))
+}
+
+#[instrument]
+pub async fn echo_handler(
+    req: HttpRequest,
+    json: Option<web::Json<serde_json::Value>>,
+    form: Option<web::Form<HashMap<String, String>>>,
+) -> HttpResponse {
+    HttpResponse::Ok().body(format!(
+        "\
+ECHO RESPONSE
+
+-- req --
+{req:#?}
+--------------------------------------------------------
+
+-- form --
+{form:#?}
+--------------------------------------------------------
+
+-- json --
+{json:#?}
+
+"
+    ))
 }
